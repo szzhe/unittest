@@ -1,0 +1,16 @@
+
+assertEqual(a,b)        判断a == b
+assertNotEqual(a,b)     判断a != b
+assertTrue(x)           判断x是否为真
+assertFalse(x)          判断x是否为假
+
+assertIs(a,b)           判断a is b
+assertIsNot(a,b)        判断a is not b
+assertIsNone(x)         判断x is None
+assertIsNotNone(x)      判断x is not None
+
+assertIn(a,b)           判断a in b
+assertNotIn(a,b)        判断a not in b
+
+assertIsInstance(a,b)   判断instance(a,b)
+assertNotIsInstance(x)  判断not instance(a,b)

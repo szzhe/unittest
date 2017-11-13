@@ -1,0 +1,166 @@
+
+一、标准异常
+
+BaseException                                           所有异常的基类
+ +-- SystemExit                                         Python解释器请求退出
+ +-- KeyboardInterrupt                                  用户中断执行(通常是输入^C)
+ +-- GeneratorExit                                      生成器(generator)发生异常来通知退出
+ +-- Exception                                          常规错误的基类
+      +-- StopIteration                                     迭代器没有更多的值
+      +-- StandardError                                     所有的内建标准异常的基类
+      |    +-- BufferError
+      |    +-- ArithmeticError                                  所有数值计算错误的基类
+      |    |    +-- FloatingPointError                              浮点计算错误
+      |    |    +-- OverflowError                                   数值运算超出最大限制
+      |    |    +-- ZeroDivisionError                               除(或取模)零 (所有数据类型)
+      |    +-- AssertionError                                   断言语句失败
+      |    +-- AttributeError                                   对象没有这个属性
+      |    +-- EnvironmentError                                 操作系统错误的基类
+      |    |    +-- IOError                                         输入/输出操作失败
+      |    |    +-- OSError                                         操作系统错误
+      |    |         +-- WindowsError (Windows)                         系统调用失败
+      |    |         +-- VMSError (VMS)
+      |    +-- EOFError                                         没有内建输入,到达EOF 标记
+      |    +-- ImportError                                      导入模块/对象失败
+      |    +-- LookupError                                      无效数据查询的基类
+      |    |    +-- IndexError                                      序列中没有此索引(index)
+      |    |    +-- KeyError                                        映射中没有这个键
+      |    +-- MemoryError                                      内存溢出错误(对于Python 解释器不是致命的)
+      |    +-- NameError                                        未声明/初始化对象 (没有属性)
+      |    |    +-- UnboundLocalError                               访问未初始化的本地变量
+      |    +-- ReferenceError                                   弱引用(Weak reference)试图访问已经垃圾回收了的对象
+      |    +-- RuntimeError                                     一般的运行时错误
+      |    |    +-- NotImplementedError                             尚未实现的方法
+      |    +-- SyntaxError                                      Python 语法错误
+      |    |    +-- IndentationError                                缩进错误
+      |    |         +-- TabError                                       Tab 和空格混用
+      |    +-- SystemError                                      一般的解释器系统错误
+      |    +-- TypeError                                        对类型无效的操作
+      |    +-- ValueError                                       传入无效的参数
+      |         +-- UnicodeError                                    Unicode 相关的错误
+      |              +-- UnicodeDecodeError                             Unicode 解码时的错误
+      |              +-- UnicodeEncodeError                             Unicode 编码时错误
+      |              +-- UnicodeTranslateError                          Unicode 转换时错误
+      +-- Warning                                           警告的基类
+           +-- DeprecationWarning                               关于被弃用的特征的警告
+           +-- PendingDeprecationWarning                        关于特性将会被废弃的警告
+           +-- RuntimeWarning                                   可疑的运行时行为(runtime behavior)的警告
+           +-- SyntaxWarning                                    可疑的语法的警告
+           +-- UserWarning                                      用户代码生成的警告
+           +-- FutureWarning                                    关于构造将来语义会有改变的警告
+           +-- OverflowWarning	                                旧的关于自动提升为长整型(long)的警告
+       +-- ImportWarning
+       +-- UnicodeWarning
+       +-- BytesWarning
+
+二、捕获异常：使用 try except 语句来捕捉异常
+
+try： try下代码段 即为 需要捕获异常的代码段
+except：捕获某一异常的模块，须带异常模块名称，可带原因参数
+        except下代码为该异常发生时，所执行的代码
+        一个try可对应多个except
+
+注意：Python 2 和 3 在异常原因这边的处理比较不同 ：
+* Python2 语句为：, 后面带原因变量名；
+* Python3 的语句为 异常模块名 as 原因变量名
+
+Python 中处理异常也可加入 else 及 finally 语句，具体功能如下：
+* else： 只可在所有 except 子句之后，且只有一个；
+         其语句为所有 except 子句均没有发生异常时执行的代码（若有其他异常，未捕获，则报错而不执行）
+* finally： 无论异常发生还是不发生，捕获还是不捕获都会执行的代码段；
+* try ... finally 可做定义清理行为，在真实场景的应用程序中， finally 子句用于释放外部资源（文件或网络连接之类的），无论它们的使用过程中是否出错。
+
+补充：
+* 有关异常名称，如果能明确判断需要捕捉的异常模块，如文件读写，可捕捉 IOError；算数相关，捕捉ArithmeticError 等
+* 但若不清楚当前代码可能发生的异常模块，可使用较大范围的异常父类模块，如 StandardError < Exception < BaseException
+
+如下代码中，所有except子句其实均可单独使用，越下范围越广，可试着注释部分except子句来运行查看效果
+try:
+    print (1/0)
+except ZeroDivisionError as err:        # 除数为0报错
+    print ('Exception: ', err)
+except ArithmeticError as err:          # 算数错误
+    print ('Exception: ', err)
+except StandardError as err:            # 所有的内建标准异常的基类 包含上述类
+    print ('Exception: ', err)
+except Exception as err:                # 常规错误的基类
+    print ('Exception: ', err)
+except BaseException as err:            # 所有异常的基类
+    print ('Exception: ', err)
+else:
+    print ("no errors")
+finally:
+    print ("no matter what, it will always be here.")
+
+三、抛出异常
+
+当程序出现错误，python会自动引发异常，也可以通过 raise 强制引发异常。一旦执行了raise 语句，raise后面的语句将不能执行。
+raise [Exception [, args [, traceback]]]
+
+Exception是异常的类型（例如，NameError）参数是一个异常参数值。该参数是可选的，如果不提供，异常的参数是"None"。
+def printLevel(level):
+    if(level > 5 or level < 1):
+        raise NameError
+    print("Level:{0}".format(level))
+
+printLevel(2) # Level:2
+
+printLevel(6)
+'''
+Traceback (most recent call last):
+  File "<input>", line 1, in <module>
+  File "<input>", line 3, in printLevel
+NameError
+'''
+
+强制引发的异常，也可以被 try... except... 捕获，如下：
+
+def printLevel(level):
+    if(level > 5 or level < 1):
+        raise NameError
+    print("Level:{0}".format(level))
+
+try:
+    printLevel(6)
+except NameError as err:
+    print("Name Error")
+    print(err) # 由于raise的参数未带原因参数，故输出为空
+
+四、自定义异常
+
+* 异常应该是典型的继承自Exception类，通过直接或间接的方式，比如  class exception_name(Exception)
+* 自定义异常使用 raise 语句引发，而且只能通过人工方式触发
+
+改写上方实例：
+class levelError(Exception):
+    pass
+
+def printLevel(level):
+    if(level > 5 or level < 1):
+        raise levelError
+    print("Level:{0}".format(level))
+
+printLevel(0)
+
+--->
+Traceback (most recent call last):
+  File "F:/szzhe/tt_main.py", line 40, in <module>
+    printLevel(6)
+  File "F:/szzhe/tt_main.py", line 37, in printLevel
+    raise levelError
+__main__.levelError
+
+如自定义 Exception 继承 RuntimeError，可定义 __init__ 带一参数，并做 try... except 捕获改异常，参考如下代码:
+
+class NetworkError(RuntimeError):
+    def __init__(self,arg):
+        self.arg = arg
+
+try:
+    raise NetworkError("Bad hostname")
+except NetworkError as err:
+    print(err.arg)
+
+--->
+Bad hostname
+
